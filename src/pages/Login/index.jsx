@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Button, Form, Input, message } from "antd";
+import { Button, Form, Input, message, Descriptions } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import axios from "axios";
+// import axios from "axios";
 import "./index.less";
 export default class Login extends Component {
   handleSubmit = async (values) => {
@@ -34,11 +34,15 @@ export default class Login extends Component {
                 rules={[
                   { required: true },
                   { type: String },
-                  { max: 12 },
-                  { min: 4 },
-                  { pattern: /^[0-9a-zA-Z_]+$/ },
+                  { max: 12, message: "该字段最长12字符" },
+                  { min: 4, message: "该字段最短4字符" },
+                  {
+                    pattern: /^[0-9a-zA-Z_]+$/,
+                    message: "该字段只匹配字母、数字、下划线",
+                  },
                   { whitespace: true },
                 ]}
+                validateFirst={true}
               >
                 <Input
                   prefix={<UserOutlined className="site-form-item-icon" />}
@@ -51,11 +55,15 @@ export default class Login extends Component {
                 rules={[
                   { required: true },
                   { type: String },
-                  { max: 12 },
-                  { min: 4 },
-                  { pattern: /^[0-9a-zA-Z_]+$/ },
+                  { max: 12, message: "该字段最长12字符" },
+                  { min: 4, message: "该字段最短4字符" },
+                  {
+                    pattern: /^[0-9a-zA-Z_]+$/,
+                    message: "该字段只匹配字母、数字、下划线",
+                  },
                   { whitespace: true },
                 ]}
+                validateFirst={true}
               >
                 <Input
                   prefix={<LockOutlined className="site-form-item-icon" />}
@@ -73,6 +81,24 @@ export default class Login extends Component {
                 </Button>
               </Form.Item>
             </Form>
+          </div>
+          <div className="login-main-tips">
+            <Descriptions
+              column={{ xs: 1, sm: 1, md: 2 }}
+              contentStyle={{ color: "#fff", fontSize: 16 + "px" }}
+              labelStyle={{ color: "#fff", fontSize: 16 + "px" }}
+            >
+              <Descriptions.Item label="超级管理员账号">
+                admin
+              </Descriptions.Item>
+              <Descriptions.Item label="密码">admin</Descriptions.Item>
+              <Descriptions.Item label="商城管理员账号">mall</Descriptions.Item>
+              <Descriptions.Item label="密码">mall</Descriptions.Item>
+              <Descriptions.Item label="推广管理员账号">
+                promotion
+              </Descriptions.Item>
+              <Descriptions.Item label="密码">promotion</Descriptions.Item>
+            </Descriptions>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+const { aliyunTheme } = require("@ant-design/aliyun-theme");
 const {
   override,
   fixBabelImports,
@@ -12,7 +13,7 @@ module.exports = override(
   }),
   addLessLoader({
     lessOptions: {
-      modifyVars: { "@primary-color": "#1890ff" },
+      modifyVars: aliyunTheme,
       javascriptEnabled: true,
     },
   }),
