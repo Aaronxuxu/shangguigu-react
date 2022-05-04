@@ -1,16 +1,12 @@
-import { Button, message } from "antd";
-// import "./App.css";
-
+import { Route, Routes, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Admin from "./pages/Admin";
 function App() {
-  const handleClick = () => {
-    message.success("成功啦...");
-  };
   return (
-    <div className="App">
-      <Button type="primary" onClick={handleClick}>
-        学习
-      </Button>
-    </div>
+    <Routes>
+      <Route path="login" element={<Login />}></Route>
+      <Route index element={<Admin />}></Route>
+    </Routes>
   );
 }
 
