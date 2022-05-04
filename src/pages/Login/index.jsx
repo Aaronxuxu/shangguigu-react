@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button, Form, Input, message, Descriptions } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-// import axios from "axios";
 import "./index.less";
 export default class Login extends Component {
   handleSubmit = async (values) => {
