@@ -1,7 +1,17 @@
-import "./App.css";
+import { Button, message } from "antd";
+// import "./App.css";
 
 function App() {
-  return <div className="App"></div>;
+  const handleClick = () => {
+    message.success("成功啦...");
+  };
+  return (
+    <div className="App">
+      <Button type="primary" onClick={handleClick}>
+        学习
+      </Button>
+    </div>
+  );
 }
 
 export default App;
