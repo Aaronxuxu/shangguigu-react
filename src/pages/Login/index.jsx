@@ -2,19 +2,28 @@ import React, { Component } from "react";
 import { Button, Form, Input, message, Descriptions } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./index.less";
-export default class Login extends Component {
-  handleSubmit = async (values) => {
-    console.log(
-      "成功回调",
-      values
-      // await axios.post("http://localhost:5000/login", values)
-    );
+import { connect } from "react-redux";
+import { setCookie } from "../../redux/actions/loginState";
+import { useNavigate, Navigate } from "react-router-dom";
+
+const myElement = (El) => {
+  return (props) => {
+    return <El {...props} navigate={useNavigate()}></El>;
   };
+};
+
+class Login extends Component {
   handleSubmitFailed = (values) => {
     return message.error("请修改/填入字段", 2);
   };
+  handleSubmit = (values) => {
+    return this.props.setCookie(values);
+  };
   render() {
-    return (
+    const { user } = this.props;
+    return Object.keys(user).length > 1 ? (
+      <Navigate to="/"></Navigate>
+    ) : (
       <div className="login">
         <div className="login-main">
           <h1 className="login-main-header">管理员登陆</h1>
@@ -104,3 +113,9 @@ export default class Login extends Component {
     );
   }
 }
+export default connect(
+  (state) => ({
+    user: state.loginState,
+  }),
+  { setCookie }
+)(myElement(Login));
