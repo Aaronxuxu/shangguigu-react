@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
+import { connect } from "react-redux";
 const items = [
   {
     path: "home/",
@@ -36,7 +37,9 @@ const items = [
     element: lazy(() => import("./pages/Admin/Charts/pie")),
   },
 ];
-function App() {
+
+function App(props) {
+  document.title = props.headerTitle;
   return (
     <Routes>
       <Route path="/login" element={<Login />}></Route>
@@ -58,4 +61,9 @@ function App() {
   );
 }
 
-export default App;
+export default connect(
+  (state) => ({
+    headerTitle: state.headerTitle,
+  }),
+  {}
+)(App);
