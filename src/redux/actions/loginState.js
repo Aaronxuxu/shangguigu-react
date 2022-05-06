@@ -1,4 +1,5 @@
-import { message } from "antd";
+import { CloseCircleOutlined } from "@ant-design/icons";
+import { message, notification } from "antd";
 import { login } from "../../api/users";
 import { setCookies, removeCookies } from "../../utils/cookieUtils";
 import { LOGIN, LOGOUT } from "../constant";
@@ -7,7 +8,10 @@ export const setCookie = (obj) => {
   return async (dispatch) => {
     const { status, data, msg } = await login(obj);
     if (status === 1) {
-      return message.warn("登录失败：" + msg);
+      return notification["error"]({
+        message: msg,
+        icon: <CloseCircleOutlined />,
+      });
     } else {
       const newObj = {
         _id: data._id,
@@ -19,7 +23,10 @@ export const setCookie = (obj) => {
         type: LOGIN,
         data: newObj,
       });
-      message.success("登录成功");
+      notification["success"]({
+        message: "登录成功",
+        duration: 1.5,
+      });
     }
   };
 };

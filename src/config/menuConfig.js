@@ -23,7 +23,11 @@ const menuList = [
     icon: <AppstoreOutlined />,
     children: [
       // 子菜单列表
-      { title: "品类管理", key: "/category", icon: <BarsOutlined /> },
+      {
+        title: "品类管理",
+        key: "/category",
+        icon: <BarsOutlined />,
+      },
       { title: "商品管理", key: "/product", icon: <ToolOutlined /> },
     ],
   },

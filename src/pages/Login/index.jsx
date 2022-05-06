@@ -13,7 +13,7 @@ const myElement = (El) => {
 };
 
 class Login extends Component {
-  handleSubmitFailed = (values) => {
+  handleSubmitFailed = () => {
     return message.error("请修改/填入字段", 2);
   };
   handleSubmit = (values) => {
