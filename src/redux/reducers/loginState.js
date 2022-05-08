@@ -1,7 +1,6 @@
 import { getCookies } from "../../utils/cookieUtils";
 import { LOGIN, LOGOUT } from "../constant";
 const init = getCookies();
-
 function loginState(prev = init, action) {
   const { type, data } = action;
   switch (type) {
