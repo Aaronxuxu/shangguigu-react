@@ -1,5 +1,5 @@
 import { CloseCircleOutlined } from "@ant-design/icons";
-import { message, notification } from "antd";
+import { notification } from "antd";
 import { login } from "../../api/users";
 import { setCookies, removeCookies } from "../../utils/cookieUtils";
 import { LOGIN, LOGOUT } from "../constant";
@@ -33,6 +33,9 @@ export const setCookie = (obj) => {
 // 清除cookies
 export const removeCookie = () => {
   removeCookies();
-  message.success("退出成功，并在一秒后返回登陆页面");
+  notification["success"]({
+    message: "退出成功，并在一秒后返回登陆页面",
+    duration: 1.5,
+  });
   return { type: LOGOUT, data: {} };
 };
