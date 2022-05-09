@@ -8,5 +8,6 @@ export const getCookies = () => cookies.load("user") || {};
 export const setCookies = (obj) =>
   cookies.save("user", obj, { expires: inFifteenMinutes });
 export const removeCookies = () => {
+  cookies.remove("userid");
   return cookies.remove("user");
 };

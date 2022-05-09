@@ -1,6 +1,6 @@
 import { CloseCircleOutlined } from "@ant-design/icons";
 import { notification } from "antd";
-import { login } from "../../api/users";
+import { login } from "../../api/axios";
 import { setCookies, removeCookies } from "../../utils/cookieUtils";
 import { LOGIN, LOGOUT } from "../constant";
 // 设置cookies
