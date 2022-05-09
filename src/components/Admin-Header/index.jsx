@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import "./index.less";
 import { removeCookie } from "../../redux/actions/loginState";
+import Weather from "../Weather";
 
 const { Header } = Layout;
 const { confirm } = Modal;
@@ -54,12 +55,13 @@ const AdminHeader = (props) => {
         gutter={24}
         style={{ height: 80 + "px" }}
       >
-        <Col>
-          <Space>
+        <Col xs={0} sm={0} md={6} lg={6} xl={6}>
+          <Space size={20}>
             <span>{timeNow}</span>
+            <Weather></Weather>
           </Space>
         </Col>
-        <Col>
+        <Col xs={3} sm={3} md={6} lg={3} xl={3}>
           <Dropdown
             overlay={
               <Menu
