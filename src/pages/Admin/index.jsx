@@ -6,7 +6,6 @@ import { message, Skeleton, Layout } from "antd";
 import AdminHeader from "../../components/Admin-Header";
 import LeftNav from "../../components/Left-Nav";
 import AdminContent from "../../components/Admin-Content";
-
 const Admin = (props) => {
   const { user } = props;
   const navigate = useNavigate();
