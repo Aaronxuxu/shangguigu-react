@@ -82,5 +82,8 @@ body{
 }
 #root {
     width: 100%;
-    height: 100%;
+    height: inherit
+}
+.base-cursor{
+    cursor: pointer;
 }
