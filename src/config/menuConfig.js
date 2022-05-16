@@ -28,7 +28,11 @@ const menuList = [
         key: "/category",
         icon: <BarsOutlined />,
       },
-      { title: "商品管理", key: "/product", icon: <ToolOutlined /> },
+      {
+        title: "商品管理",
+        key: "/product",
+        icon: <ToolOutlined />,
+      },
     ],
   },
   { title: "用户管理", key: "/users", icon: <UserOutlined /> },

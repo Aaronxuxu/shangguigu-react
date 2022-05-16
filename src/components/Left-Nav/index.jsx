@@ -6,11 +6,14 @@ import { Link, useLocation } from "react-router-dom";
 import menuItems from "../../config/menuConfig";
 import { connect } from "react-redux";
 import { setHeader } from "../../redux/actions/headerTitle";
+import deepMenu from "../../config/deepMenu";
+
 const { Sider } = Layout;
 
 const LeftNav = (props) => {
   // 设置state
   const [openKeys, setOpenKeys] = useState([]);
+  const [selectKeys, setSelectKeys] = useState("");
   const [items, setItems] = useState([]);
   const location = useLocation();
 
@@ -38,7 +41,7 @@ const LeftNav = (props) => {
   const getOpenkey = (url, items) => {
     items = items.filter((e) => e.children);
     for (let i = 0; i < items.length; i++) {
-      if (items[i].children.findIndex((e) => e.key === url) !== -1) {
+      if (items[i].children.find((e) => url.includes(e.key))) {
         return [items[i].key];
       }
     }
@@ -59,10 +62,16 @@ const LeftNav = (props) => {
   useEffect(() => {
     //  获取选中与展开的菜单栏
     const itemsList = getMenuNodes(menuItems);
-    const openKeys = getOpenkey(location.pathname, menuItems);
-    setOpenKeys(openKeys);
     setItems(itemsList);
   }, []);
+
+  useEffect(() => {
+    const deepItem = deepMenu(menuItems);
+    const selectKeys = deepItem.find((e) => location.pathname.includes(e.key));
+    const openKeys = getOpenkey(location.pathname, menuItems);
+    setOpenKeys(openKeys);
+    setSelectKeys(location.pathname === "/" ? "/home" : selectKeys.key);
+  }, [location.pathname]);
 
   return (
     <Sider className="admin-leftNav">
@@ -77,7 +86,7 @@ const LeftNav = (props) => {
           }}
           mode="inline"
           items={items}
-          selectedKeys={location.pathname}
+          selectedKeys={selectKeys}
           openKeys={openKeys}
           onOpenChange={openChange}
           onSelect={onSelect}

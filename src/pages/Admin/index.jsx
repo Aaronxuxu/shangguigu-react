@@ -20,7 +20,7 @@ const Admin = (props) => {
   return Object.keys(user).length < 1 ? (
     <Skeleton />
   ) : (
-    <Layout style={{ height: 100 + "%" }}>
+    <Layout style={{ minHeight: 100 + "%" }}>
       <LeftNav></LeftNav>
       <Layout>
         <AdminHeader />

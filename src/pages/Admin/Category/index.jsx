@@ -40,11 +40,15 @@ const Category = () => {
           >
             修改分类
           </Button>
-          <Button
-            onClick={() => handleSonCate({ id: record._id, name: record.name })}
-          >
-            查看子分类
-          </Button>
+          {parentId === 0 ? (
+            <Button
+              onClick={() =>
+                handleSonCate({ id: record._id, name: record.name })
+              }
+            >
+              查看子分类
+            </Button>
+          ) : null}
         </Space>
       ),
     },
@@ -138,14 +142,15 @@ const Category = () => {
     const { id, name } = value;
     setParentId(id);
     setParentName(name);
-    return getCate(value);
+    return getCate(id);
   };
 
   // 返回一级分类
   const handleFirst = () => {
     setParentId(0);
-    getCate();
+    getCate(0);
   };
+
   // 模拟生命周期
   useEffect(() => {
     getCate(parentId);
@@ -182,7 +187,7 @@ const Category = () => {
         pagination={{
           hideOnSinglePage: true,
           position: ["bottomCenter"],
-          defaultPageSize: 6,
+          defaultPageSize: 8,
         }}
       />
       <Modal

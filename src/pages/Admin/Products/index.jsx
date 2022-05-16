@@ -1,6 +1,8 @@
-// 商品路由
-import React from "react";
-const Products = () => {
-  return <div>Products</div>;
-};
-export default Products;
+import React, { Component } from "react";
+import { Outlet } from "react-router-dom";
+
+export default class index extends Component {
+  render() {
+    return <Outlet></Outlet>;
+  }
+}
