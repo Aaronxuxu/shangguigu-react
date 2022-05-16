@@ -19,6 +19,22 @@ const items = [
   {
     path: "product/",
     element: lazy(() => import("./pages/Admin/Products")),
+    children: [
+      {
+        path: "",
+        element: lazy(() => import("./pages/Admin/Products/Products-Home")),
+      },
+      {
+        path: "detail/",
+        element: lazy(() => import("./pages/Admin/Products/Products-Detail")),
+      },
+      {
+        path: "addupdate/",
+        element: lazy(() =>
+          import("./pages/Admin/Products/Products-AddUpdate")
+        ),
+      },
+    ],
   },
   {
     path: "role/",
@@ -53,7 +69,21 @@ function App(props) {
                 <e.element />
               </Suspense>
             }
-          ></Route>
+          >
+            {e.children
+              ? e.children.map((el, il) => (
+                  <Route
+                    key={il}
+                    path={el.path}
+                    element={
+                      <Suspense fallback={<div>加载中</div>}>
+                        <el.element />
+                      </Suspense>
+                    }
+                  ></Route>
+                ))
+              : null}
+          </Route>
         ))}
         <Route path="" element={<Navigate to="/home" />}></Route>
       </Route>
