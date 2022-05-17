@@ -9,13 +9,14 @@ const ReturnRoute = (props) => {
     return navigate(-1, { replace: true });
   };
   return (
-    <Space>
+    <Space size="large">
       <Button
         type="primary"
         onClick={handleBack}
         icon={<ArrowLeftOutlined />}
+        size="large"
       ></Button>
-      <span>{props.title}</span>
+      <span style={{ fontSize: "20px" }}>{props.title}</span>
     </Space>
   );
 };
