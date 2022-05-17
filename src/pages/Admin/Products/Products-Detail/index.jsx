@@ -1,82 +1,145 @@
 import React, { useEffect, useState } from "react";
 import ReturnRoute from "../../../../components/Return-Route";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Card, Row, Col, Divider, Skeleton } from "antd";
+import { useLocation } from "react-router-dom";
+import { Card, List, Skeleton, Space, Image } from "antd";
 import { getCategoryID } from "../../../../api/axios";
+import { BASE_IMG_URL } from "../../../../utils/constant";
 import "./index.less";
 
 const ProductsDetail = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const [result, setResult] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isloading, setIsLoading] = useState(true);
+  const [product, setProduct] = useState({});
+
   const getProduct = async () => {
-    const { data } = location.state;
-    const {
-      data: { name: pName },
-    } = await getCategoryID(data.pCategoryId);
-    const {
-      data: { name: cName },
-    } = await getCategoryID(data.categoryId);
-    setResult([
-      {
-        key: "name",
-        chiName: "商品名称：",
-        value: data.name,
-      },
-      {
-        key: "desc",
-        chiName: "商品描述：",
-        value: data.desc,
-      },
-      {
-        key: "price",
-        chiName: "商品价格：",
-        value: data.price,
-      },
-      {
-        key: "category",
-        chiName: "所属分类：",
-        value: `${pName} ==> ${cName}`,
-      },
-      {
-        key: "img",
-        chiName: "商品图片：",
-        value: data.img,
-      },
-      {
-        key: "detail",
-        chiName: "商品详情：",
-        value: data.detail,
-      },
+    const { name, price, imgs, desc, detail, categoryId, pCategoryId } =
+      location.state.data;
+    const result = await Promise.all([
+      getCategoryID(pCategoryId),
+      getCategoryID(categoryId),
     ]);
-    setLoading(false);
+    setProduct({
+      name,
+      price,
+      imgs,
+      desc,
+      detail,
+      categoryItems: result.map((e) => e.data.name),
+    });
+    setIsLoading(false);
   };
-  const handleBack = () => {
-    return navigate(-1);
-  };
+
   useEffect(() => {
     getProduct();
   }, []);
 
   return (
     <Card title={<ReturnRoute title="商品详情" />} bordered={false}>
-      {result.map((e, i) => (
-        <div key={i}>
-          <Row align="middle">
-            <Col span={2} style={{ fontSize: "22px", fontWeight: 700 }}>
-              {e.chiName}
-            </Col>
-
-            <Col span={22} style={{ fontSize: "16px" }}>
-              <Skeleton loading={loading} active>
-                {e.value}
-              </Skeleton>
-            </Col>
-          </Row>
-          <Divider></Divider>
-        </div>
-      ))}
+      <List>
+        <List.Item className="products-list-items">
+          <Space wrap>
+            <div className="products-title">商品名称：</div>
+            <div className="products-content">
+              {isloading ? (
+                <Skeleton.Input active size="large"></Skeleton.Input>
+              ) : (
+                <span className="products-content">{product.name}</span>
+              )}
+            </div>
+          </Space>
+        </List.Item>
+        <List.Item className="products-list-items">
+          <Space wrap>
+            <span className="products-title">商品描述：</span>
+            {isloading ? (
+              <Skeleton.Input
+                active
+                size="large"
+                loading={isloading}
+              ></Skeleton.Input>
+            ) : (
+              <span className="products-content">
+                {product.desc === undefined
+                  ? "该商品未添加商品描述"
+                  : product.desc}
+              </span>
+            )}
+          </Space>
+        </List.Item>
+        <List.Item className="products-list-items">
+          <Space wrap>
+            <span className="products-title">商品价格：</span>
+            {isloading ? (
+              <Skeleton.Input
+                active
+                size="large"
+                loading={isloading}
+              ></Skeleton.Input>
+            ) : (
+              <span className="products-content">{product.price}元</span>
+            )}
+          </Space>
+        </List.Item>
+        <List.Item className="products-list-items">
+          <Space wrap>
+            <span className="products-title">所属分类：</span>
+            {isloading ? (
+              <Skeleton.Input
+                active
+                size="large"
+                loading={isloading}
+              ></Skeleton.Input>
+            ) : (
+              <span className="products-content">
+                {product.categoryItems.reduce((a, c) => `${a} ==> ${c}`)}
+              </span>
+            )}
+          </Space>
+        </List.Item>
+        <List.Item className="products-list-items">
+          <Space wrap>
+            <span className="products-title">商品图片：</span>
+            {isloading ? (
+              <Skeleton.Image
+                active
+                size="large"
+                loading={isloading}
+              ></Skeleton.Image>
+            ) : (
+              <span className="products-content">
+                <Space wrap size="middle">
+                  {product.imgs.length > 0
+                    ? product.imgs.map((e) => (
+                        <Image src={BASE_IMG_URL + e}></Image>
+                      ))
+                    : "该商品未添加相关图片"}
+                </Space>
+              </span>
+            )}
+          </Space>
+        </List.Item>
+        <List.Item className="products-list-items">
+          <Space wrap>
+            <span className="products-title">商品详情：</span>
+            {isloading ? (
+              <Skeleton.Input
+                active
+                size="large"
+                loading={isloading}
+              ></Skeleton.Input>
+            ) : product.detail !== undefined ? (
+              <span
+                className="products-content"
+                dangerouslySetInnerHTML={{
+                  __html: product.detail,
+                }}
+              ></span>
+            ) : (
+              "该商品未添加详情"
+            )}
+          </Space>
+        </List.Item>
+      </List>
     </Card>
   );
 };
