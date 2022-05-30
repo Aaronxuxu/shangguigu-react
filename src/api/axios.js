@@ -43,3 +43,14 @@ export const updateStatus = (productId, status) =>
 // 根据ID/Name搜索产品分页列表
 export const searchforNameDesc = (obj) =>
   ajax("/api/manage/product/search", obj, GET);
+
+// 添加商品
+export const addProduct = (obj) => ajax("/api/manage/product/add", obj, POST);
+
+// 更新商品
+export const upadteProduct = (obj) =>
+  ajax("/api/manage/product/update", obj, POST);
+
+// 查找指定商品
+export const searchOneProduct = (id) =>
+  ajax("/api/manage/product/searchOne", { id }, GET);
