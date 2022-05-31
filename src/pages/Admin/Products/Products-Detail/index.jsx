@@ -1,31 +1,40 @@
 import React, { useEffect, useState } from "react";
 import ReturnRoute from "../../../../components/Return-Route";
-import { useLocation } from "react-router-dom";
-import { Card, List, Skeleton, Space, Image } from "antd";
-import { getCategoryID } from "../../../../api/axios";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Card, List, Skeleton, Space, Image, notification } from "antd";
+import { getCategoryID, searchOneProduct } from "../../../../api/axios";
 import { BASE_IMG_URL } from "../../../../utils/constant";
 import "./index.less";
 
 const ProductsDetail = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isloading, setIsLoading] = useState(true);
   const [product, setProduct] = useState({});
 
   const getProduct = async () => {
-    const { name, price, imgs, desc, detail, categoryId, pCategoryId } =
-      location.state.data;
-    const result = await Promise.all([
-      getCategoryID(pCategoryId),
-      getCategoryID(categoryId),
-    ]);
-    setProduct({
-      name,
-      price,
-      imgs,
-      desc,
-      detail,
-      categoryItems: result.map((e) => e.data.name),
-    });
+    const { id } = location.state;
+    const { status, data, msg } = await searchOneProduct(id);
+    if (status !== 0) {
+      notification["error"]({
+        message: msg + "，正在跳转回上一页",
+      });
+      return setTimeout(() => {
+        navigate(-1);
+      }, 2000);
+    }
+    const { pCategoryId, categoryId } = data;
+    if (pCategoryId === "0") {
+      const result = await getCategoryID(categoryId);
+      data["categoryItems"] = [result.data.name];
+    } else {
+      const result = await Promise.all([
+        getCategoryID(pCategoryId),
+        getCategoryID(categoryId),
+      ]);
+      data["categoryItems"] = result.map((e) => e.data.name);
+    }
+    setProduct({ ...data });
     setIsLoading(false);
   };
 
@@ -127,15 +136,16 @@ const ProductsDetail = () => {
                 size="large"
                 loading={isloading}
               ></Skeleton.Input>
-            ) : product.detail !== undefined ? (
+            ) : (
               <span
                 className="products-content"
                 dangerouslySetInnerHTML={{
-                  __html: product.detail,
+                  __html:
+                    typeof product.detail !== "undefined"
+                      ? product.detail
+                      : "<h1>暂无添加商品详情</h1>",
                 }}
               ></span>
-            ) : (
-              "该商品未添加详情"
             )}
           </Space>
         </List.Item>

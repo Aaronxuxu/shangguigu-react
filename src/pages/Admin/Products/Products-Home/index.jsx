@@ -117,10 +117,12 @@ const Products = () => {
       align: "center",
       render: (text, record) => (
         <Space size="middle" direction="vertical" align="center">
-          <Link to="detail/" state={{ data: record }}>
+          <Link to="detail/" state={{ id: record._id }}>
             详情
           </Link>
-          <Link to="addupdate/">修改</Link>
+          <Link to="addupdate/" state={{ id: record._id }}>
+            修改
+          </Link>
         </Space>
       ),
     },
