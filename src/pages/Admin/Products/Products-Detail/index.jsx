@@ -3,7 +3,7 @@ import ReturnRoute from "../../../../components/Return-Route";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card, List, Skeleton, Space, Image, notification } from "antd";
 import { getCategoryID, searchOneProduct } from "../../../../api/axios";
-import { BASE_IMG_URL } from "../../../../utils/constant";
+import { BASE_IMG_URL, ERROR_IMG } from "../../../../utils/constant";
 import "./index.less";
 
 const ProductsDetail = () => {
@@ -118,8 +118,17 @@ const ProductsDetail = () => {
               <span className="products-content">
                 <Space wrap size="middle">
                   {product.imgs.length > 0
-                    ? product.imgs.map((e) => (
-                        <Image src={BASE_IMG_URL + e}></Image>
+                    ? product.imgs.map((e, i) => (
+                        <Image
+                          key={i}
+                          src={BASE_IMG_URL + e}
+                          style={{
+                            width: "110px",
+                            height: "110px",
+                            border: "1px solid #ccc",
+                          }}
+                          fallback={ERROR_IMG}
+                        ></Image>
                       ))
                     : "该商品未添加相关图片"}
                 </Space>

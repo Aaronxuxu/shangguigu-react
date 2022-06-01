@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Form,
@@ -8,6 +8,7 @@ import {
   Cascader,
   notification,
   Button,
+  message,
 } from "antd";
 import ReturnRoute from "../../../../components/Return-Route";
 
@@ -16,9 +17,12 @@ import {
   upadteProduct,
   addProduct,
   searchOneProduct,
+  deleteImg,
 } from "../../../../api/axios";
 import { useLocation } from "react-router-dom";
 import PicUpload from "./Pic-Upload";
+import DraftWysiwyg from "./Draft-Wysiwyg";
+
 const { TextArea } = Input;
 
 const ProductsAddUpdate = () => {
@@ -26,18 +30,22 @@ const ProductsAddUpdate = () => {
   const [optionCate, setOptionCate] = useState([]);
   // 判断添加或修改
   const [isAdd, setIsAdd] = useState(false);
+
   // 获取路径传递过来的state
   const location = useLocation();
   // 定义表单form属性
   const [form] = Form.useForm();
   // 跳转路由
   const navigate = useNavigate();
+  // 获取子组件图片
+  const picArr = useRef();
 
   // 判断添加/修改，并获取该商品所有数据。
   const getProductDetail = async () => {
     let cateItems = await getCategories(0);
     // 判断修改/添加
     if (location.state) {
+      const { setImgs } = picArr.current;
       let cateChil = [];
       const {
         state: { id },
@@ -68,6 +76,7 @@ const ProductsAddUpdate = () => {
           cateChil.length > 0 && e._id === pCategoryId ? [...cateChil] : null,
       }));
       setOptionCate(cateItems);
+      setImgs(data.imgs);
       return form.setFieldsValue({
         ...data,
         categoryIds,
@@ -94,6 +103,7 @@ const ProductsAddUpdate = () => {
     }
     return data;
   };
+
   // 分类加载
   const handleLoad = async (selOptions) => {
     const target = selOptions[selOptions.length - 1];
@@ -107,11 +117,13 @@ const ProductsAddUpdate = () => {
     target.loading = false;
     return setOptionCate([...optionCate]);
   };
+
   // 提交数据
   const handleFinish = async (values) => {
     const { categoryIds } = values;
-    console.log(values);
-    return;
+    const { getImgs, delImgs } = picArr.current;
+    values.imgs = getImgs();
+    // return;
     if (location.state) {
       values["_id"] = location.state.id;
     }
@@ -125,6 +137,16 @@ const ProductsAddUpdate = () => {
       result = await addProduct(values);
     } else {
       result = await upadteProduct(values);
+      const imgArr = delImgs();
+      if (imgArr.length > 0) {
+        const result = await Promise.all(imgArr.map((e) => deleteImg(e)));
+        const status = result.every((e) => e.status === 0);
+        if (status) {
+          message.success("删除图片成功");
+        } else {
+          return message.error("删除图片失败");
+        }
+      }
     }
     const { status, msg } = result;
     if (status !== 0) {
@@ -152,7 +174,7 @@ const ProductsAddUpdate = () => {
         size="large"
         layout="horizontal"
         labelCol={{ span: 2 }}
-        wrapperCol={{ span: 12 }}
+        wrapperCol={{ span: 6 }}
         onFinish={handleFinish}
       >
         {/* 必须 */}
@@ -178,12 +200,12 @@ const ProductsAddUpdate = () => {
             changeOnSelect
           ></Cascader>
         </Form.Item>
-        <Form.Item label="商品图片" name="imgs">
-          <PicUpload></PicUpload>
+        <Form.Item label="商品图片" name="imgs" wrapperCol={{ span: 20 }}>
+          <PicUpload ref={picArr}></PicUpload>
         </Form.Item>
-        {/* <Form.Item label="商品详情" name="detail">
-          <Input />
-        </Form.Item> */}
+        <Form.Item label="商品详情" name="detail" wrapperCol={{ span: 20 }}>
+          <DraftWysiwyg></DraftWysiwyg>
+        </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             {isAdd ? "添加" : "修改"}

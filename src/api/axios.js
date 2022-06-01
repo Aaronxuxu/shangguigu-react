@@ -54,3 +54,7 @@ export const upadteProduct = (obj) =>
 // 查找指定商品
 export const searchOneProduct = (id) =>
   ajax("/api/manage/product/searchOne", { id }, GET);
+
+// 删除图片
+export const deleteImg = (img) =>
+  ajax("/api/manage/img/delete", { name: img }, POST);
