@@ -39,13 +39,14 @@ const ProductsAddUpdate = () => {
   const navigate = useNavigate();
   // 获取子组件图片
   const picArr = useRef();
-
+  const editor = useRef();
   // 判断添加/修改，并获取该商品所有数据。
   const getProductDetail = async () => {
     let cateItems = await getCategories(0);
     // 判断修改/添加
     if (location.state) {
       const { setImgs } = picArr.current;
+      const { setEditor } = editor.current;
       let cateChil = [];
       const {
         state: { id },
@@ -77,6 +78,7 @@ const ProductsAddUpdate = () => {
       }));
       setOptionCate(cateItems);
       setImgs(data.imgs);
+      setEditor(data.detail);
       return form.setFieldsValue({
         ...data,
         categoryIds,
@@ -122,8 +124,10 @@ const ProductsAddUpdate = () => {
   const handleFinish = async (values) => {
     const { categoryIds } = values;
     const { getImgs, delImgs } = picArr.current;
+    const { getEditor } = editor.current;
     values.imgs = getImgs();
-    // return;
+    values.detail = getEditor();
+
     if (location.state) {
       values["_id"] = location.state.id;
     }
@@ -204,7 +208,7 @@ const ProductsAddUpdate = () => {
           <PicUpload ref={picArr}></PicUpload>
         </Form.Item>
         <Form.Item label="商品详情" name="detail" wrapperCol={{ span: 20 }}>
-          <DraftWysiwyg></DraftWysiwyg>
+          <DraftWysiwyg ref={editor}></DraftWysiwyg>
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
