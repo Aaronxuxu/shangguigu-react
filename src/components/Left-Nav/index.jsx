@@ -29,7 +29,11 @@ const LeftNav = (props) => {
         };
       } else {
         return {
-          label: <Link to={e.key}>{e.title}</Link>,
+          label: (
+            <Link to={e.key} state={e.state && { ...e.state }}>
+              {e.title}
+            </Link>
+          ),
           icon: e.icon,
           key: e.key,
         };

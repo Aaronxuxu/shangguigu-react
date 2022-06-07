@@ -1,6 +1,8 @@
 // 权限路由
 import React from "react";
+import { Card } from "antd";
+const CardTitle = () => {};
 const Role = () => {
-  return <div>Role</div>;
+  return <Card title="Default size card"></Card>;
 };
 export default Role;
