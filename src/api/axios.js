@@ -61,6 +61,11 @@ export const deleteImg = (img) =>
 
 // 获取角色列表
 export const getRoles = () => ajax("/api/manage/role/list", {}, GET);
+
+// 获取单一角色
+export const getRoleOne = (id) =>
+  ajax("/api/manange/role/searchOne", { id }, GET);
+
 // 添加角色
 export const addRole = (roleName) =>
   ajax("/api/manage/role/add", { roleName }, POST);
@@ -68,3 +73,6 @@ export const addRole = (roleName) =>
 // 更新角色(给角色设置权限)
 export const updateRole = (obj) =>
   ajax("/api/manage/role/update", { ...obj }, POST);
+
+// 删除角色
+export const deleteRole = (id) => ajax("/api/manage/role/delete", { id }, POST);
