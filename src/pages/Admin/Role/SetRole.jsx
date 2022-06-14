@@ -1,5 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Tree, Form, Input } from "antd";
+import React, {
+  useState,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+
+import { Tree, Space, Input } from "antd";
 import menuList from "../../../config/menuConfig";
 
 const getMenuChiKeys = (list) => {
@@ -15,62 +21,51 @@ const getMenuChiKeys = (list) => {
     return a;
   }, []);
 };
+
 const SetRole = (props, ref) => {
   const { roleTarget } = props;
-  const [roleForm] = Form.useForm();
+  const [roleDetail, getRoleDetail] = useState({});
+
   const [expandedKeys, setExpandedKeys] = useState([]);
-  const [target, setTarget] = useState({});
+  const [checkedKeys, setCheckedKeys] = useState([]);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-
-  // 深度遍历获取所有父系节点并展开
-  useEffect(() => {
-    const { setForm } = props;
-    setExpandedKeys(["", ...getMenuChiKeys(menuList)]);
-    setForm(roleForm);
-  }, []);
-
-  useEffect(() => {
-    setTarget(roleTarget);
-  }, [roleTarget]);
-
-  useEffect(() => {
-    roleForm.setFieldsValue(target);
-  }, [target.menus]);
 
   const onExpand = (expandedKeysValue) => {
     setExpandedKeys(expandedKeysValue);
     setAutoExpandParent(false);
   };
 
-  const onCheck = (checkedKeysValue) => {
-    target.menus = checkedKeysValue.filter((e) => e);
-    setTarget({ ...target });
-  };
+  useEffect(() => {
+    getRoleDetail(roleTarget);
+    setCheckedKeys(roleTarget.menus);
+  }, [roleTarget]);
+
+  useEffect(() => {
+    setExpandedKeys(["", ...getMenuChiKeys(menuList)]);
+  }, []);
+
+  useImperativeHandle(ref, () => ({
+    changeRole: () => checkedKeys.filter((e) => e),
+  }));
 
   return (
-    <Form form={roleForm}>
-      <Form.Item label="角色名称" name="name">
-        <Input disabled />
-      </Form.Item>
-      <Form.Item name="menus">
+    <>
+      <Space direction="vertical" size="large">
+        <Space>
+          <span>角色名称：</span>
+          <Input disabled value={roleDetail && roleDetail.name}></Input>
+        </Space>
         <Tree
           checkable
-          selectable={false}
           onExpand={onExpand}
           expandedKeys={expandedKeys}
           autoExpandParent={autoExpandParent}
-          onCheck={onCheck}
-          checkedKeys={target.menus}
-          treeData={[
-            {
-              title: "平台权限",
-              key: "",
-              children: menuList,
-            },
-          ]}
+          onCheck={(checkedKeysValue) => setCheckedKeys(checkedKeysValue)}
+          checkedKeys={checkedKeys}
+          treeData={[{ title: "平台权限", key: "", children: menuList }]}
         />
-      </Form.Item>
-    </Form>
+      </Space>
+    </>
   );
 };
-export default SetRole;
+export default forwardRef(SetRole);

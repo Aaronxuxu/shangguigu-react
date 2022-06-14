@@ -1,10 +1,9 @@
 // 权限路由
 import React, { useState, useEffect, useRef } from "react";
-
-import { Card, Space, Button, Modal, message, Table } from "antd";
+import { Card, Space, Button, Modal, message, Table, Popconfirm } from "antd";
 import AddRole from "./AddRole";
 import SetRole from "./SetRole";
-import { addRole, updateRole, getRoles } from "../../../api/axios";
+import { addRole, updateRole, getRoles, deleteRole } from "../../../api/axios";
 import { getCookies } from "../../../utils/cookieUtils";
 import dayjs from "dayjs";
 
@@ -12,6 +11,7 @@ import dayjs from "dayjs";
 const CardTitle = (props) => {
   // 获取修改数据
   const { roleTarget } = props;
+  const setRoleRef = useRef();
   // 是否展开
   const [isModalVisible, setIsModalVisible] = useState(false);
   // 添加/设置
@@ -20,6 +20,7 @@ const CardTitle = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   // 表单属性
   const [form, setForm] = useState({});
+
   // 弹出框回调
   const showModal = (target) => {
     setIsModalVisible(true);
@@ -32,41 +33,33 @@ const CardTitle = (props) => {
 
   // 提交数据
   const handleSubmit = async () => {
-    const { getRolesItems } = props;
+    const { getRolesItems, setRoleTarget } = props;
     setConfirmLoading(true);
-
-    return form
-      .validateFields()
-      .then(async (values) => {
-        const { roleName } = values;
-        if (isAdd) {
-          const { status, msg, data } = await addRole(roleName);
-          if (status !== 0) {
-            message.error(msg);
-          } else {
-            message.success("添加角色成功");
-          }
-        } else {
-          const { username } = getCookies();
-          const { status, msg, data } = await updateRole({
-            _id: roleTarget._id,
-            menus: values.menus,
-            auth_name: username,
-          });
-          if (status !== 0) {
-            message.error(msg);
-          } else {
-            message.success("修改角色成功");
-          }
-        }
-        setConfirmLoading(false);
+    if (isAdd) {
+      try {
+        const value = await form.validateFields();
+        const { status, msg } = await addRole(value.roleName);
+        status !== 0 ? message.error(msg) : message.success("添加角色成功");
         form.resetFields();
-        getRolesItems();
-        setIsModalVisible(false);
-      })
-      .catch((err) => {
-        return message.warning("请填入必填项");
+      } catch (error) {
+        message.warning("填入必填项");
+        return setConfirmLoading(false);
+      }
+    } else {
+      const { username } = getCookies();
+      const { changeRole } = setRoleRef.current;
+      const value = changeRole();
+      const { status, msg } = await updateRole({
+        _id: roleTarget._id,
+        menus: value,
+        auth_name: username,
       });
+      status !== 0 ? message.error(msg) : message.success("修改角色成功");
+      setRoleTarget({});
+    }
+    setConfirmLoading(false);
+    getRolesItems();
+    setIsModalVisible(false);
   };
 
   return (
@@ -86,7 +79,14 @@ const CardTitle = (props) => {
       <Modal
         title={isAdd ? "创建角色" : "设置角色权限"}
         visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
+        onCancel={() => {
+          setIsModalVisible(false);
+          if (!isAdd) {
+            props.setRoleTarget({});
+          } else {
+            form.resetFields();
+          }
+        }}
         onOk={handleSubmit}
         maskClosable={false}
         confirmLoading={confirmLoading}
@@ -94,7 +94,7 @@ const CardTitle = (props) => {
         {isAdd ? (
           <AddRole setForm={setForm} />
         ) : (
-          <SetRole setForm={setForm} roleTarget={roleTarget} />
+          <SetRole ref={setRoleRef} roleTarget={roleTarget} />
         )}
       </Modal>
     </>
@@ -123,13 +123,28 @@ const Role = () => {
       title: "授权人",
       dataIndex: "auth_name",
     },
+    {
+      title: "操作",
+      key: "action",
+      render: (_, record) => (
+        <Popconfirm
+          title="确定要删除吗?"
+          onConfirm={() => handleDelete(record._id)}
+        >
+          <Button type="primary">删除</Button>
+        </Popconfirm>
+      ),
+    },
   ];
   // 角色数据
   const [roleItems, setRoleItems] = useState([]);
+
   // 当前选中目标
   const [roleTarget, setRoleTarget] = useState({});
+
   // 加载
   const [loading, setLoading] = useState(false);
+
   // 获取角色列表
   const getRolesItems = async () => {
     setLoading(true);
@@ -140,7 +155,17 @@ const Role = () => {
     setRoleItems(data);
     setLoading(false);
   };
-  //
+
+  //删除角色
+  const handleDelete = async (id) => {
+    const { status, msg } = await deleteRole(id);
+    if (status !== 0) {
+      message.error(msg);
+    } else {
+      message.success("删除成功");
+    }
+    return getRolesItems();
+  };
   // 生命周期
   useEffect(() => {
     getRolesItems();
@@ -149,13 +174,21 @@ const Role = () => {
   return (
     <Card
       title={
-        <CardTitle getRolesItems={getRolesItems} roleTarget={roleTarget} />
+        <CardTitle
+          getRolesItems={getRolesItems}
+          setRoleTarget={setRoleTarget}
+          roleTarget={roleTarget}
+        />
       }
     >
       <Table
         rowSelection={{
           type: "radio",
-          onChange: (_, selectedRows) => setRoleTarget({ ...selectedRows[0] }),
+          selectedRowKeys: [roleTarget._id],
+          onChange: (_, selectedRows) => {
+            console.log(selectedRows);
+            setRoleTarget({ ...selectedRows[0] });
+          },
         }}
         bordered={true}
         columns={columns}
