@@ -43,11 +43,6 @@ class Login extends Component {
                   { required: true },
                   { type: String },
                   { max: 12, message: "该字段最长12字符" },
-                  { min: 4, message: "该字段最短4字符" },
-                  {
-                    pattern: /^[0-9a-zA-Z_]+$/,
-                    message: "该字段只匹配字母、数字、下划线",
-                  },
                   { whitespace: true },
                 ]}
                 validateFirst={true}
