@@ -76,3 +76,18 @@ export const updateRole = (obj) =>
 
 // 删除角色
 export const deleteRole = (id) => ajax("/api/manage/role/delete", { id }, POST);
+
+// 获取用户
+export const getUsers = () => ajax("/api/manage/user/list", {}, GET);
+
+// 添加用户
+export const addUser = (userValue) =>
+  ajax("/api/manage/user/add", userValue, POST);
+
+// 删除用户
+export const delUser = (id) =>
+  ajax("/api/manage/user/delete", { userId: id }, POST);
+
+// 修改用户数据
+export const updateUser = (value) =>
+  ajax("/api/manage/user/update", value, POST);
