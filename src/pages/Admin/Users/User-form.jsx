@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { Form, Input, Select } from "antd";
+import { getOneUser } from "../../../api/axios";
 const { Option } = Select;
+
 const UserForm = (props) => {
   const { setForm, isEdit, roles } = props;
   const [form] = Form.useForm();
@@ -33,6 +35,21 @@ const UserForm = (props) => {
         rules={[
           { required: true, message: "请填入用户名" },
           { type: "string", min: 4, max: 12 },
+          !isEdit.bol && {
+            validator: async (_, username) => {
+              const { msg, status, isExist } = await getOneUser(username);
+              if (status !== 0) {
+                return Promise.reject(new Error("获取用户名失败，请重新尝试"));
+              }
+              if (isExist) {
+                return Promise.reject(
+                  new Error("该用户名已存在，请选择新的用户名")
+                );
+              } else {
+                return Promise.resolve();
+              }
+            },
+          },
         ]}
       >
         <Input placeholder="请填入用户名" />

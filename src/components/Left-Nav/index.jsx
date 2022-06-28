@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, message } from "antd";
 
 import "./index.less";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import menuItems from "../../config/menuConfig";
 import { connect } from "react-redux";
 import { setHeader } from "../../redux/actions/headerTitle";
@@ -10,12 +10,49 @@ import deepMenu from "../../config/deepMenu";
 
 const { Sider } = Layout;
 
+function getRoleNav(role, nav) {
+  const data = nav
+    .map((e) => {
+      if (role.some((el) => el === e.key)) {
+        return e;
+      } else {
+        if (e.children && e.children.length > 0) {
+          const result = getRoleNav(role, e.children).filter((i) => i);
+          if (result.length > 0) {
+            return { ...e, children: result };
+          } else {
+            return null;
+          }
+        } else {
+          return null;
+        }
+      }
+    })
+    .filter((e) => e);
+  return data;
+}
+
 const LeftNav = (props) => {
+  const {
+    loginState: {
+      username,
+      role: { menus },
+    },
+  } = props;
   // 设置state
+
+  // 展开导航栏
   const [openKeys, setOpenKeys] = useState([]);
+  // 选中导航栏
   const [selectKeys, setSelectKeys] = useState("");
+  // 导航栏列表
   const [items, setItems] = useState([]);
+
+  // 路由跳转
+  const navigate = useNavigate();
+  // 路径
   const location = useLocation();
+  const { pathname } = location;
 
   // 遍历路由链接，生成左侧导航栏
   const getMenuNodes = (menuItems) => {
@@ -64,19 +101,34 @@ const LeftNav = (props) => {
   };
 
   useEffect(() => {
-    //  获取选中与展开的菜单栏
-    const itemsList = getMenuNodes(menuItems);
-    setItems(itemsList);
+    let items;
+    if (username !== "admin") {
+      items = getRoleNav(menus, menuItems);
+    } else {
+      items = menuItems;
+    }
+    const itemLists = getMenuNodes(items);
+    setItems(itemLists);
   }, []);
 
   useEffect(() => {
     const deepItem = deepMenu(menuItems);
-    const selectKeys = deepItem.find((e) => location.pathname.includes(e.key));
-    const openKeys = getOpenkey(location.pathname, menuItems);
+    const selectKeys = deepItem.find((e) => pathname.includes(e.key));
+    const openKeys = getOpenkey(pathname, menuItems);
     setOpenKeys(openKeys);
-    setSelectKeys(location.pathname === "/" ? "/home" : selectKeys.key);
-  }, [location.pathname]);
-
+    setSelectKeys(pathname === "/" ? "/home" : selectKeys.key);
+  }, [pathname]);
+  useEffect(() => {
+    if (username !== "admin" && pathname !== "/") {
+      const isRolePage = menus.some((e) => pathname.includes(e));
+      if (!isRolePage) {
+        message.error("当前用户角色并无此页面权限，一秒后返回首页。");
+        setTimeout(() => {
+          navigate("/", { replace: true });
+        }, 1000);
+      }
+    }
+  }, [pathname]);
   return (
     <Sider className="admin-leftNav">
       <div className="admin-leftNav-header">Mall</div>
@@ -99,6 +151,11 @@ const LeftNav = (props) => {
     </Sider>
   );
 };
-export default connect(() => ({}), {
-  setHeader,
-})(LeftNav);
+export default connect(
+  (state) => ({
+    loginState: state.loginState,
+  }),
+  {
+    setHeader,
+  }
+)(LeftNav);

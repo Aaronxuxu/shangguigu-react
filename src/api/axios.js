@@ -79,7 +79,9 @@ export const deleteRole = (id) => ajax("/api/manage/role/delete", { id }, POST);
 
 // 获取用户
 export const getUsers = () => ajax("/api/manage/user/list", {}, GET);
-
+// 获取单一用户
+export const getOneUser = (username) =>
+  ajax("/api/manage/user/findOne", { username }, GET);
 // 添加用户
 export const addUser = (userValue) =>
   ajax("/api/manage/user/add", userValue, POST);
