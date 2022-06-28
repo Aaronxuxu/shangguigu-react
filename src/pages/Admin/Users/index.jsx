@@ -123,8 +123,7 @@ const Users = () => {
         return getUserItems();
       })
       .catch((e) => {
-        console.log(e);
-        message.error("请填入必填项");
+        message.error("请确认必填项是否已填写/用户名是否已存在");
       });
   };
 
