@@ -147,10 +147,17 @@ const Role = () => {
 
   // 获取角色列表
   const getRolesItems = async () => {
+    const {
+      username,
+      role: { _id },
+    } = getCookies();
     setLoading(true);
-    const { status, data, msg } = await getRoles();
+    let { status, data, msg } = await getRoles();
     if (status !== 0) {
       message.error(msg);
+    }
+    if (username !== "admin") {
+      data = data.filter((e) => e._id !== _id);
     }
     setRoleItems(data);
     setLoading(false);
@@ -186,7 +193,6 @@ const Role = () => {
           type: "radio",
           selectedRowKeys: [roleTarget._id],
           onChange: (_, selectedRows) => {
-            console.log(selectedRows);
             setRoleTarget({ ...selectedRows[0] });
           },
         }}
@@ -196,6 +202,13 @@ const Role = () => {
         loading={loading}
         rowKey="_id"
         pagination={{ position: ["bottomCenter"], pageSize: 8 }}
+        onRow={(record) => {
+          return {
+            onClick: () => {
+              setRoleTarget(record);
+            },
+          };
+        }}
       />
     </Card>
   );
