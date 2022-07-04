@@ -14,6 +14,7 @@ export const setCookie = (obj) => {
         icon: <CloseCircleOutlined />,
       });
     } else {
+      console.log(data);
       const newObj = {
         _id: data._id,
         username: data.username,
